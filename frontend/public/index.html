@@ -9,34 +9,120 @@
       name="description"
       content="Web site created using create-react-app"
     />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>Medilink</title>
+
+    <!--
+      -- Bundle Preload Optimization --
+      Dynamically read asset-manifest.json to get the real hashed filenames,
+      then preload & defer-load them in the optimal order.
+    -->
+    <script>
+      (function () {
+        function injectPreload(url) {
+          var link = document.createElement("link");
+          link.rel = "preload";
+          link.as = "script";
+          link.href = url;
+          document.head.appendChild(link);
+        }
+        function injectScript(url) {
+          var script = document.createElement("script");
+          script.src = url;
+          script.defer = true;
+          document.body.appendChild(script);
+        }
+
+        // Fetch the CRA-generated manifest to discover hashed filenames
+        fetch("%PUBLIC_URL%/asset-manifest.json")
+          .then(function (res) { return res.json(); })
+          .then(function (manifest) {
+            var main = manifest["static/js/main.js"];
+            var vendor = manifest["static/js/vendors~main.js"];
+            if (vendor) {
+              injectPreload("%PUBLIC_URL%" + vendor);
+              injectScript("%PUBLIC_URL%" + vendor);
+            }
+            if (main) {
+              injectPreload("%PUBLIC_URL%" + main);
+              injectScript("%PUBLIC_URL%" + main);
+            }
+          })
+          .catch(function (err) {
+            console.error("Failed to load asset-manifest.json", err);
+          });
+      })();
+    </script>
   </head>
+
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- NOTE: No manual <script src="…main.[hash].js"> tags here—
+         they’re injected dynamically above. -->
+  </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>Medilink</title>
+
     <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      -- Bundle Preload Optimization --
+      Dynamically read asset-manifest.json to get the real hashed filenames,
+      then preload & defer-load them in the optimal order.
     -->
+    <script>
+      (function () {
+        function injectPreload(url) {
+          var link = document.createElement("link");
+          link.rel = "preload";
+          link.as = "script";
+          link.href = url;
+          document.head.appendChild(link);
+        }
+        function injectScript(url) {
+          var script = document.createElement("script");
+          script.src = url;
+          script.defer = true;
+          document.body.appendChild(script);
+        }
+
+        // Fetch the CRA-generated manifest to discover hashed filenames
+        fetch("%PUBLIC_URL%/asset-manifest.json")
+          .then(function (res) { return res.json(); })
+          .then(function (manifest) {
+            var main = manifest["static/js/main.js"];
+            var vendor = manifest["static/js/vendors~main.js"];
+            if (vendor) {
+              injectPreload("%PUBLIC_URL%" + vendor);
+              injectScript("%PUBLIC_URL%" + vendor);
+            }
+            if (main) {
+              injectPreload("%PUBLIC_URL%" + main);
+              injectScript("%PUBLIC_URL%" + main);
+            }
+          })
+          .catch(function (err) {
+            console.error("Failed to load asset-manifest.json", err);
+          });
+      })();
+    </script>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!-- NOTE: No manual <script src="…main.[hash].js"> tags here—
+         they’re injected dynamically above. -->
   </body>
 </html>
