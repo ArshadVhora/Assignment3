@@ -15,5 +15,7 @@ const RecordSchema = new mongoose.Schema({
     deletedAt:     { type: Date }
   }, { timestamps: true });
   
+RecordSchema.index({ patientId: 1 });
+
   module.exports = mongoose.model('Record', RecordSchema);
   
