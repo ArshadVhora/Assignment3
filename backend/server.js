@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
-
+const helmet  = require('helmet');
 const passport = require('./config/passport');
 const session = require('express-session');
 const NotificationScheduler = require('./utils/notificationScheduler');
@@ -13,6 +13,31 @@ connectDB().then(() => {
     console.log('Connected to MongoDB');
     NotificationScheduler.start(); // Start the notification scheduler
 });
+
+// --- Security Headers (Helmet with CSP & frameguard) ---
+app.use(helmet({
+  // Disable the default CSP to define our own
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc:    ["'self'"],
+      scriptSrc:     ["'self'"],
+      styleSrc:      ["'self'", "https://fonts.googleapis.com"],
+      imgSrc:        ["'self'", "data:"],
+      connectSrc:    ["'self'", process.env.CLIENT_URL],
+      fontSrc:       ["'self'", "https://fonts.gstatic.com"],
+      frameSources:  ["'none'"],
+      frameAncestors:["'none'"],       // prevents clickjacking
+      objectSrc:     ["'none'"],
+      formAction:    ["'self'"],       // only allows form submissions back to this origin
+      baseUri:       ["'self'"]
+    }
+  },
+  // also sets X-Frame-Options to DENY, X-Content-Type-Options, etc.
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  xssFilter: true
+}));
+
 
 // --- CORS Setup (for React frontend to access cookies/sessions) ---
 app.use(cors({
