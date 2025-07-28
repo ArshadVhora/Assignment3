@@ -7,6 +7,7 @@ const passport = require('./config/passport');
 const session = require('express-session');
 const NotificationScheduler = require('./utils/notificationScheduler');
 const recordsRoutes = require('./routes/records');
+const prometheusBundle = require('express-prom-bundle');
 
 const app = express();
 connectDB().then(() => {
@@ -36,6 +37,15 @@ app.use(helmet({
   frameguard: { action: 'deny' },
   noSniff: true,
   xssFilter: true
+}));
+
+
+app.use(prometheusBundle({
+  includeMethod: true,
+  includePath: true,
+  metricsPath: '/metrics',
+  collectDefaultMetrics: { timeout: 5000 },
+  buckets: [0.1, 0.3, 1.5, 10]
 }));
 
 
